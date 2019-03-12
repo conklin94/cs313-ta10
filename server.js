@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 5000;
-const connectionString = process.env.DATABASE_URL
+const connectionString = process.env.DATABASE_URL;
 const { Pool } = require('pg');
 const pool = new Pool({connectionString: connectionString});
 
@@ -15,16 +15,16 @@ app.listen(port, function() {
     console.log("Port: " + port);
 });
 
-
-
-app.get("/getPerson", function (){
-    const id = app.query.id;
-
-    pool.query('SELECT * FROM person WHERE person_id = $1', [id], (err, res) => {
+app.get("/getPerson", function (req, res){
+    const id = req.query.id;
+    pool.query('SELECT * FROM person WHERE person_id = $1', [id], (err, result) => {
         if (err) {
-          throw err
+          res.status(500).json({success: false, data: error});
         }
-
-        console.log('person:', res.rows[0]);
+        else {
+          const person = result.rows[0];
+          console.log(person);
+			    res.status(200).json(person);
+        }
     });
 });
